@@ -21,7 +21,10 @@ module.exports = async function (context, req) {
 	catch (ex) {
 		context.res = {
 			status: 500,
-            body: ex.response.data,
+			body: {
+				status: 500,
+				message: ex.response ? ex.response.data : ex.message
+			},
             headers: {
 				"Content-Type": "application/json"
 			}

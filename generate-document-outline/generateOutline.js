@@ -93,7 +93,7 @@ function parseResponse(response) {
 	const processedText = originalText.replace(/[\t\n]+/ig, "");
 
 	// Get JSON string
-	const matchResults = processedText.match(/((\[[^\}]{3,})?\{s*[^\}\{]{3,}?:.*\}([^\{]+\])?)/);
+	const matchResults = processedText.match(/.*(\[.*\]).*/);
 	if (matchResults[0] === null || matchResults[0] === undefined || matchResults[0].length === 0) {
 		const errMessage = "No JSON string exists in the response text.";
 		const ex = new Exception(errMessage);
@@ -105,7 +105,27 @@ function parseResponse(response) {
 		throw ex;
 	}
 
-	return JSON.parse(matchResults[0]);
+	const jsonObj = JSON.parse(matchResults[0]);
+	return parseJsonObject(jsonObj);
+}
+
+// Parse the json object in the 
+function parseJsonObject(obj) {
+	if (Array.isArray(obj)) {
+		if (Object.keys(obj[0]).length > 1) {
+			// This means we need to expand this object
+			const resultObj = [];
+			for (const key in obj[0]) {
+				resultObj.push({
+					[key]: obj[0][key]
+				});
+			}
+
+			return resultObj;
+		}
+	}
+
+	return obj;
 }
 
 module.exports = generateOutline;
