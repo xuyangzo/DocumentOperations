@@ -52,7 +52,6 @@ async function execute(args, retryCount) {
 	}
 	catch (ex) {
 		retryCount--;
-		console.error(`Retrying! RetryCount remaining: ${retryCount}`);
 
 		// We do not process anymore
 		if (retryCount === 0) {
@@ -61,6 +60,7 @@ async function execute(args, retryCount) {
 		}
 		// Keep retrying
 		else {
+			console.error(`Retrying! RetryCount remaining: ${retryCount}`);
 			return await execute(args, retryCount);
 		}
 	}

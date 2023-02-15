@@ -1,9 +1,18 @@
 # Document Operation APIs
 
+**APIs**
+
+[Generate Document Summary](#generate-document-summary)
+
+[Generate Document Outline](#generate-document-outline)
+
+[Generate Topic Cover](#generate-topic-cover)
+
 ### Generate Document Summary
 
 ```http
-GET/POST https://pdf-fhl-operations.azurewebsites.net/api/generate-document-summary
+GET https://pdf-fhl-operations.azurewebsites.net/api/generate-document-summary
+POST https://pdf-fhl-operations.azurewebsites.net/api/generate-document-summary
 Content-Type: application/json
 ```
 **Request Body**
@@ -51,10 +60,11 @@ Content-Type: application/json
 }
 ```
 
-### Generate Document outline
+### Generate Document Outline
 
 ```http
-GET/POST https://pdf-fhl-operations.azurewebsites.net/api/generate-document-outline
+GET https://pdf-fhl-operations.azurewebsites.net/api/generate-document-outline
+POST https://pdf-fhl-operations.azurewebsites.net/api/generate-document-outline
 Content-Type: application/json
 ```
 **Request Body**
@@ -111,6 +121,49 @@ Content-Type: application/json
             "Mysterious Objects": 2
         }
     ],
+    "retriedCount": 0
+}
+```
+
+### Generate Topic Cover
+
+```http
+GET https://pdf-fhl-operations.azurewebsites.net/api/get-topic-cover
+POST https://pdf-fhl-operations.azurewebsites.net/api/get-topic-cover
+Content-Type: application/json
+```
+**Request Body**
+
+| Name | Type | Description | Range | Required | Default |
+| :--- | :--- | :---------- | :---- | :------- | :------ |
+| prompt  | string | The prompt to generate the topic cover | | Yes | |
+| size    | string | The size of the image to generate. Small=256x256. Medium=512x512. Large=1024x1024 | small/medium/large | No | small |
+
+**Request Example**
+
+```http
+POST https://pdf-fhl-operations.azurewebsites.net/api/get-topic-cover
+
+{
+    "prompt": "a cow eating grass"
+}
+```
+
+**Response Body**
+
+| Name | Type | Description |
+| :--- | :--- | :---------- |
+| url     | string | The url of the image generated. Will expire in 1 hour. |
+| retriedCount | int  | The number of retries made. |
+
+**Response Example**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "url": "https://oaidalleapiprodscus.blob.core.windows.net/private/org-CaWH1M5DUQPpn0LEvSV00yBb/user-hRnjLvLcHCBtJTkEOOhOtzvg/img-G9RwkGS62oVRXy7rYOdhddC3.png?st=2023-02-15T04%3A39%3A40Z&se=2023-02-15T06%3A39%3A40Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-02-15T02%3A29%3A23Z&ske=2023-02-16T02%3A29%3A23Z&sks=b&skv=2021-08-06&sig=17mtmKkZccudUsW%2BfWA1WV56o1BfpdNsN%2ByJz7wEcKU%3D",
     "retriedCount": 0
 }
 ```
