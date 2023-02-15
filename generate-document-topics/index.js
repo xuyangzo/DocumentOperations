@@ -1,4 +1,4 @@
-const generateSummary = require("../generate-document-topics/generateTopics");
+const generateKeywords = require("./generateTopics");
 
 module.exports = async function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
@@ -6,11 +6,11 @@ module.exports = async function (context, req) {
     const { pdfText, temperature, max_tokens, top_p, frequency_penalty, presence_penalty } = req.body;
 
     try {
-        const [summary, retriedCount] = await generateSummary(pdfText, temperature, max_tokens, top_p, frequency_penalty, presence_penalty);
+        const [topics, retriedCount] = await generateKeywords(pdfText, temperature, max_tokens, top_p, frequency_penalty, presence_penalty);
 		context.res = {
 			status: 200,
             body: {
-                summary,
+                topics,
                 retriedCount
             },
             headers: {

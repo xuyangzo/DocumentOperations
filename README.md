@@ -2,11 +2,71 @@
 
 **APIs**
 
+[Generate Document Topics](#generate-document-topics)
+
 [Generate Document Summary](#generate-document-summary)
 
 [Generate Document Outline](#generate-document-outline)
 
 [Generate Topic Cover](#generate-topic-cover)
+
+### Generate Document Topics
+
+```http
+GET https://pdf-fhl-operations.azurewebsites.net/api/generate-document-topics
+POST https://pdf-fhl-operations.azurewebsites.net/api/generate-document-topics
+Content-Type: application/json
+```
+**Request Body**
+
+| Name | Type | Description | Range | Required | Default |
+| :--- | :--- | :---------- | :---- | :------- | :------ |
+| pdfText     | string | The PDF text for analysis. | | Yes | |
+| temperature | float  | Controls randomness: the lower, the more deterministic and repetitive. | 0-1 | No | 0.7 |
+| max_tokens  | int    | Max number of tokens to generate. | 0-2048 | No | 128 |
+| top_p       | float  | Controls diversity via nucleus sampling. | 0-1 | No | 1 |
+| frequency_penalty. | float | How much to penalize new tokens based on existing frequency. | 0-2 | No | 0 |
+| presence_penalty  | float | How much to penalize new tokens based on whether they exist in text so far. | 0-2 | No | 0 |
+
+**Request Example**
+
+```http
+POST https://pdf-fhl-operations.azurewebsites.net/api/generate-document-summary
+
+{
+    "pdfText": "asd,114514",
+    "temperature": 0.7,
+    "max_tokens": 128,
+    "top_p": 1,
+    "frequency_penalty": 0,
+    "presence_penalty": 0
+}
+```
+
+**Response Body**
+
+| Name | Type | Description |
+| :--- | :--- | :---------- |
+| topics       | string[] | The topics generated. |
+| retriedCount | int  | The number of retries made. |
+
+**Response Example**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "topics": [
+        "Super Bowl",
+        "commercials",
+        "Maya Rudolph",
+        "Kevin Bacon",
+        "Budweiser"
+    ],
+    "retriedCount": 0
+}
+```
 
 ### Generate Document Summary
 
