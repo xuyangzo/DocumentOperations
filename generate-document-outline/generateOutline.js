@@ -11,7 +11,7 @@ const openai = new OpenAIApi(configuration);
 // Generate document outline
 async function generateOutline(pages, temperature, max_tokens, top_p, frequency_penalty, presence_penalty) {
 	// Setting default value
-	const targetTemperature = temperature ? Number(temperature) : 0.5;
+	const targetTemperature = temperature ? Number(temperature) : 0.7;
 	const targetMaxTokens = max_tokens ? Number(max_tokens) : 256;
 	const targetTopP = top_p ? Number(top_p) : 1
 	const targetFrequencyPenalty = frequency_penalty ? Number(frequency_penalty) : 0;
@@ -93,7 +93,7 @@ function parseResponse(response) {
 	const processedText = originalText.replace(/[\t\n]+/ig, "");
 
 	// Get JSON string
-	const matchResults = /.*(\[.*\]).*/.exec(processedText);
+	const matchResults = /^[^\[]*(\[.*\])[^\]]*$/.exec(processedText);
 	let outline = null;
 	for (let i = 1; i >= 0; --i) {
 		try {
@@ -130,6 +130,9 @@ function reorderOutline(outline) {
 		// Add 1 to all the index
 		for (const section of outline) {
 			section.index += 1;
+			if (section.children !== null) {
+				reorderOutline(section.children);
+			}
 		}
 	}
 }

@@ -21,12 +21,12 @@ Content-Type: application/json
 
 | Name | Type | Description | Range | Required | Default |
 | :--- | :--- | :---------- | :---- | :------- | :------ |
-| pdfText     | string | The PDF text for analysis. | | Yes | |
+| pdfText     | string | The PDF text for analysis. | 0 ~ 6400 characters | Yes | |
 | temperature | float  | Controls randomness: the lower, the more deterministic and repetitive. | 0 ~ 1 | No | 0.7 |
 | max_tokens  | int    | Max number of tokens to generate. | 0 ~ 2048 | No | 128 |
 | top_p       | float  | Controls diversity via nucleus sampling. | 0 ~ 1 | No | 1 |
-| frequency_penalty. | float | How much to penalize new tokens based on existing frequency. | -2.0 ~ 2.0| No | 0 |
-| presence_penalty  | float | How much to penalize new tokens based on whether they exist in text so far. | -2.0 ~ 2.0| No | 0 |
+| frequency_penalty. | float | How much to penalize new tokens based on existing frequency. | -2.0 ~ 2.0 | No | 0 |
+| presence_penalty  | float | How much to penalize new tokens based on whether they exist in text so far. | -2.0 ~ 2.0 | No | 0 |
 
 **Request Example**
 
@@ -47,7 +47,7 @@ POST https://pdf-fhl-operations.azurewebsites.net/api/generate-document-summary
 
 | Name | Type | Description |
 | :--- | :--- | :---------- |
-| topics       | string[] | The topics generated. |
+| topics       | string collection | The topics generated. |
 | retriedCount | int  | The number of retries made. |
 
 **Response Example**
@@ -79,12 +79,12 @@ Content-Type: application/json
 
 | Name | Type | Description | Range | Required | Default |
 | :--- | :--- | :---------- | :---- | :------- | :------ |
-| pdfText     | string | The PDF text for analysis. | | Yes | |
+| pdfText     | string | The PDF text for analysis. | 0 ~ 6400 characters | Yes | |
 | temperature | float  | Controls randomness: the lower, the more deterministic and repetitive. | 0 ~ 1 | No | 0.7 |
 | max_tokens  | int    | Max number of tokens to generate. | 0 ~ 2048 | No | 128 |
 | top_p       | float  | Controls diversity via nucleus sampling. | 0 ~ 1 | No | 1 |
-| frequency_penalty. | float | How much to penalize new tokens based on existing frequency. | -2.0 ~ 2.0| No | 0 |
-| presence_penalty  | float | How much to penalize new tokens based on whether they exist in text so far. | -2.0 ~ 2.0| No | 0 |
+| frequency_penalty. | float | How much to penalize new tokens based on existing frequency. | -2.0 ~ 2.0 | No | 0 |
+| presence_penalty  | float | How much to penalize new tokens based on whether they exist in text so far. | -2.0 ~ 2.0 | No | 0 |
 
 **Request Example**
 
@@ -131,12 +131,12 @@ Content-Type: application/json
 
 | Name | Type | Description | Range | Required | Default |
 | :--- | :--- | :---------- | :---- | :------- | :------ |
-| pages       | string[] | The list of page texts of the document. | | Yes | |
-| temperature | float  | Controls randomness: the lower, the more deterministic and repetitive. | 0 ~ 1 | No | 0.5 |
+| pages       | string collection | The list of page texts of the document. | 0 ~ 4500 characters  | Yes | |
+| temperature | float  | Controls randomness: the lower, the more deterministic and repetitive. | 0 ~ 1 | No | 0.7 |
 | max_tokens  | int    | Max number of tokens to generate. | 0 ~ 2048 | No | 256 |
 | top_p       | float  | Controls diversity via nucleus sampling. | 0 ~ 1 | No | 1 |
-| frequency_penalty | float | How much to penalize new tokens based on existing frequency. | -2.0 ~ 2.0| No | 0 |
-| presence_penalty  | float | How much to penalize new tokens based on whether they exist in text so far. | -2.0 ~ 2.0| No | 0 |
+| frequency_penalty | float | How much to penalize new tokens based on existing frequency. | -2.0 ~ 2.0 | No | 0 |
+| presence_penalty  | float | How much to penalize new tokens based on whether they exist in text so far. | -2.0 ~ 2.0 | No | 0 |
 
 **Request Example**
 
@@ -160,7 +160,7 @@ POST https://pdf-fhl-operations.azurewebsites.net/api/generate-document-outline
 
 | Name | Type | Description |
 | :--- | :--- | :---------- |
-| outline     | object[] | The document outline generated. |
+| outline     | [OutlineItem](#data-model) collection | The document outline generated. |
 | retriedCount | int  | The number of retries made. |
 
 **Response Example**
@@ -174,14 +174,20 @@ Content-Type: application/json
         {
             "title": "Introduction",
             "index": 1
-        }, 
-        { 
-            "title": "China's Claims", 
-            "index": 2 
-        }, 
-        { 
-            "title": "U.S. Response", 
-            "index": 3 
+        },
+        {
+            "title": "China's claims",
+            "index": 2,
+            "children": [
+                {
+                    "title": "US response",
+                    "index": 2
+                }
+            ]
+        },
+        {
+            "title": "Conclusion",
+            "index": 3
         }
     ],
     "retriedCount": 0
@@ -230,6 +236,16 @@ Content-Type: application/json
     "retriedCount": 0
 }
 ```
+
+### Data Model
+
+**OutlineItem**
+
+| Property | Type | Description |
+| :------- | :--- | :---------- |
+| title | string | The title of the outline section. |
+| index | int | The page index of the outline section. |
+| children | OutlineItem collection | The sub-outlines of the outline section. |
 
 ### Error Response
 
