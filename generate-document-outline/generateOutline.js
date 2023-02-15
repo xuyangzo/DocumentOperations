@@ -11,8 +11,8 @@ const openai = new OpenAIApi(configuration);
 // Generate document outline
 async function generateOutline(pages, temperature, max_tokens, top_p, frequency_penalty, presence_penalty) {
 	// Setting default value
-	const targetTemperature = temperature ? Number(temperature) : 0.7;
-	const targetMaxTokens = max_tokens ? Number(max_tokens) : 150;
+	const targetTemperature = temperature ? Number(temperature) : 0.5;
+	const targetMaxTokens = max_tokens ? Number(max_tokens) : 256;
 	const targetTopP = top_p ? Number(top_p) : 1
 	const targetFrequencyPenalty = frequency_penalty ? Number(frequency_penalty) : 0;
 	const targetPresencePenalty = presence_penalty ? Number(presence_penalty) : 0;
@@ -93,39 +93,45 @@ function parseResponse(response) {
 	const processedText = originalText.replace(/[\t\n]+/ig, "");
 
 	// Get JSON string
-	const matchResults = processedText.match(/.*(\[.*\]).*/);
-	if (matchResults[0] === null || matchResults[0] === undefined || matchResults[0].length === 0) {
-		const errMessage = "No JSON string exists in the response text.";
-		const ex = new Exception(errMessage);
-		ex.response = {
-			data: {
-				message: errMessage
-			}
-		};
-		throw ex;
-	}
-
-	const jsonObj = JSON.parse(matchResults[0]);
-	return parseJsonObject(jsonObj);
-}
-
-// Parse the json object in the 
-function parseJsonObject(obj) {
-	if (Array.isArray(obj)) {
-		if (Object.keys(obj[0]).length > 1) {
-			// This means we need to expand this object
-			const resultObj = [];
-			for (const key in obj[0]) {
-				resultObj.push({
-					[key]: obj[0][key]
-				});
-			}
-
-			return resultObj;
+	const matchResults = /.*(\[.*\]).*/.exec(processedText);
+	let outline = null;
+	for (let i = 1; i >= 0; --i) {
+		try {
+			outline = JSON.parse(matchResults[i]);
+			break;
+		}
+		catch (ex) {
+			console.error(ex);
 		}
 	}
 
-	return obj;
+	if (outline !== null) {
+		reorderOutline(outline);
+		return outline;
+	}
+
+	const errMessage = "No JSON string exists in the response text.";
+	const ex = new Error(errMessage);
+	ex.response = {
+		data: {
+			message: errMessage
+		}
+	};
+	throw ex;
+}
+
+// Reorder the result outline
+function reorderOutline(outline) {
+	outline.sort((a, b) => {
+		return a.index - b.index;
+	});
+
+	if (outline[0].index === 0) {
+		// Add 1 to all the index
+		for (const section of outline) {
+			section.index += 1;
+		}
+	}
 }
 
 module.exports = generateOutline;

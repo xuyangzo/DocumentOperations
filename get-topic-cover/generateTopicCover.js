@@ -52,7 +52,7 @@ async function execute(args, retryCount) {
 
 		// This means no image is generated.
 		const errMessage = "No image is generated.";
-		const ex = new Exception(errMessage);
+		const ex = new Error(errMessage);
 		ex.response = {
 			data: {
 				message: errMessage

@@ -132,8 +132,8 @@ Content-Type: application/json
 | Name | Type | Description | Range | Required | Default |
 | :--- | :--- | :---------- | :---- | :------- | :------ |
 | pages       | string[] | The list of page texts of the document. | | Yes | |
-| temperature | float  | Controls randomness: the lower, the more deterministic and repetitive. | 0-1 | No | 0.7 |
-| max_tokens  | int    | Max number of tokens to generate. | 0-2048 | No | 128 |
+| temperature | float  | Controls randomness: the lower, the more deterministic and repetitive. | 0-1 | No | 0.5 |
+| max_tokens  | int    | Max number of tokens to generate. | 0-2048 | No | 256 |
 | top_p       | float  | Controls diversity via nucleus sampling. | 0-1 | No | 1 |
 | frequency_penalty | float | How much to penalize new tokens based on existing frequency. | 0-2 | No | 0 |
 | presence_penalty  | float | How much to penalize new tokens based on whether they exist in text so far. | 0-2 | No | 0 |
@@ -160,7 +160,7 @@ POST https://pdf-fhl-operations.azurewebsites.net/api/generate-document-outline
 
 | Name | Type | Description |
 | :--- | :--- | :---------- |
-| outline     | object[] | The document outline generated. The object key is the abstract and the object value is the page index. |
+| outline     | object[] | The document outline generated. |
 | retriedCount | int  | The number of retries made. |
 
 **Response Example**
@@ -172,13 +172,16 @@ Content-Type: application/json
 {
     "outline": [
         {
-            "API Tensions": 0
-        },
-        {
-            "Test Balloons with Fire": 1
-        },
-        {
-            "Mysterious Objects": 2
+            "title": "Introduction",
+            "index": 1
+        }, 
+        { 
+            "title": "China's Claims", 
+            "index": 2 
+        }, 
+        { 
+            "title": "U.S. Response", 
+            "index": 3 
         }
     ],
     "retriedCount": 0

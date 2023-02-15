@@ -58,7 +58,7 @@ async function execute(args, retryCount) {
 
         // There are no meaningful data in the response. Should throw
         const errMessage = "No keywords in represented in the OPENAI API response.";
-		const ex = new Exception(errMessage);
+		const ex = new Error(errMessage);
 		ex.response = {
 			data: {
 				message: errMessage
