@@ -22,11 +22,11 @@ Content-Type: application/json
 | Name | Type | Description | Range | Required | Default |
 | :--- | :--- | :---------- | :---- | :------- | :------ |
 | pdfText     | string | The PDF text for analysis. | | Yes | |
-| temperature | float  | Controls randomness: the lower, the more deterministic and repetitive. | 0-1 | No | 0.7 |
-| max_tokens  | int    | Max number of tokens to generate. | 0-2048 | No | 128 |
-| top_p       | float  | Controls diversity via nucleus sampling. | 0-1 | No | 1 |
-| frequency_penalty. | float | How much to penalize new tokens based on existing frequency. | 0-2 | No | 0 |
-| presence_penalty  | float | How much to penalize new tokens based on whether they exist in text so far. | 0-2 | No | 0 |
+| temperature | float  | Controls randomness: the lower, the more deterministic and repetitive. | 0 ~ 1 | No | 0.7 |
+| max_tokens  | int    | Max number of tokens to generate. | 0 ~ 2048 | No | 128 |
+| top_p       | float  | Controls diversity via nucleus sampling. | 0 ~ 1 | No | 1 |
+| frequency_penalty. | float | How much to penalize new tokens based on existing frequency. | -2.0 ~ 2.0| No | 0 |
+| presence_penalty  | float | How much to penalize new tokens based on whether they exist in text so far. | -2.0 ~ 2.0| No | 0 |
 
 **Request Example**
 
@@ -80,11 +80,11 @@ Content-Type: application/json
 | Name | Type | Description | Range | Required | Default |
 | :--- | :--- | :---------- | :---- | :------- | :------ |
 | pdfText     | string | The PDF text for analysis. | | Yes | |
-| temperature | float  | Controls randomness: the lower, the more deterministic and repetitive. | 0-1 | No | 0.7 |
-| max_tokens  | int    | Max number of tokens to generate. | 0-2048 | No | 128 |
-| top_p       | float  | Controls diversity via nucleus sampling. | 0-1 | No | 1 |
-| frequency_penalty. | float | How much to penalize new tokens based on existing frequency. | 0-2 | No | 0 |
-| presence_penalty  | float | How much to penalize new tokens based on whether they exist in text so far. | 0-2 | No | 0 |
+| temperature | float  | Controls randomness: the lower, the more deterministic and repetitive. | 0 ~ 1 | No | 0.7 |
+| max_tokens  | int    | Max number of tokens to generate. | 0 ~ 2048 | No | 128 |
+| top_p       | float  | Controls diversity via nucleus sampling. | 0 ~ 1 | No | 1 |
+| frequency_penalty. | float | How much to penalize new tokens based on existing frequency. | -2.0 ~ 2.0| No | 0 |
+| presence_penalty  | float | How much to penalize new tokens based on whether they exist in text so far. | -2.0 ~ 2.0| No | 0 |
 
 **Request Example**
 
@@ -132,11 +132,11 @@ Content-Type: application/json
 | Name | Type | Description | Range | Required | Default |
 | :--- | :--- | :---------- | :---- | :------- | :------ |
 | pages       | string[] | The list of page texts of the document. | | Yes | |
-| temperature | float  | Controls randomness: the lower, the more deterministic and repetitive. | 0-1 | No | 0.5 |
-| max_tokens  | int    | Max number of tokens to generate. | 0-2048 | No | 256 |
-| top_p       | float  | Controls diversity via nucleus sampling. | 0-1 | No | 1 |
-| frequency_penalty | float | How much to penalize new tokens based on existing frequency. | 0-2 | No | 0 |
-| presence_penalty  | float | How much to penalize new tokens based on whether they exist in text so far. | 0-2 | No | 0 |
+| temperature | float  | Controls randomness: the lower, the more deterministic and repetitive. | 0 ~ 1 | No | 0.5 |
+| max_tokens  | int    | Max number of tokens to generate. | 0 ~ 2048 | No | 256 |
+| top_p       | float  | Controls diversity via nucleus sampling. | 0 ~ 1 | No | 1 |
+| frequency_penalty | float | How much to penalize new tokens based on existing frequency. | -2.0 ~ 2.0| No | 0 |
+| presence_penalty  | float | How much to penalize new tokens based on whether they exist in text so far. | -2.0 ~ 2.0| No | 0 |
 
 **Request Example**
 
