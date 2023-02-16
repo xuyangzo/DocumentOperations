@@ -10,15 +10,16 @@ const openai = new OpenAIApi(configuration);
 // Generate document summary
 async function generateSummary(pdfText, temperature, max_tokens, top_p, frequency_penalty, presence_penalty) {
 	// Setting default value
+	const targetPdfText = pdfText.length > 6400 ? pdfText.slice(0, 6400) : pdfText;
 	const targetTemperature = temperature ? Number(temperature) : 0.7;
-	const targetMaxTokens = max_tokens ? Number(max_tokens) : 128;
+	const targetMaxTokens = max_tokens ? Number(max_tokens) : 512;
 	const targetTopP = top_p ? Number(top_p) : 1
 	const targetFrequencyPenalty = frequency_penalty ? Number(frequency_penalty) : 0;
 	const targetPresencePenalty = presence_penalty ? Number(presence_penalty) : 0;
 
     try {
         const args = {
-			pdfText,
+			targetPdfText,
 			targetTemperature,
 			targetMaxTokens,
 			targetTopP,
@@ -36,10 +37,10 @@ async function generateSummary(pdfText, temperature, max_tokens, top_p, frequenc
 // Execute summary generation by calling openai's API
 async function execute(args, retryCount) {
     try {
-        const { pdfText, targetTemperature, targetMaxTokens, targetTopP, targetFrequencyPenalty, targetPresencePenalty } = args;
+        const { targetPdfText, targetTemperature, targetMaxTokens, targetTopP, targetFrequencyPenalty, targetPresencePenalty } = args;
 		const response = await openai.createCompletion({
             model: "text-davinci-003",
-            prompt: getSummaryWithPrefix(pdfText),
+            prompt: getSummaryWithPrefix(targetPdfText),
             temperature: targetTemperature,
             max_tokens: targetMaxTokens,
             top_p: targetTopP,

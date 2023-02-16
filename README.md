@@ -81,7 +81,7 @@ Content-Type: application/json
 | :--- | :--- | :---------- | :---- | :------- | :------ |
 | pdfText     | string | The PDF text for analysis. | 0 ~ 6400 characters | Yes | |
 | temperature | float  | Controls randomness: the lower, the more deterministic and repetitive. | 0 ~ 1 | No | 0.7 |
-| max_tokens  | int    | Max number of tokens to generate. | 0 ~ 2048 | No | 128 |
+| max_tokens  | int    | Max number of tokens to generate. | 0 ~ 2048 | No | 512 |
 | top_p       | float  | Controls diversity via nucleus sampling. | 0 ~ 1 | No | 1 |
 | frequency_penalty. | float | How much to penalize new tokens based on existing frequency. | -2.0 ~ 2.0 | No | 0 |
 | presence_penalty  | float | How much to penalize new tokens based on whether they exist in text so far. | -2.0 ~ 2.0 | No | 0 |
@@ -205,8 +205,9 @@ Content-Type: application/json
 
 | Name | Type | Description | Range | Required | Default |
 | :--- | :--- | :---------- | :---- | :------- | :------ |
-| prompt  | string | The prompt to generate the topic cover | | Yes | |
-| size    | string | The size of the image to generate. Small=256x256. Medium=512x512. Large=1024x1024 | small/medium/large | No | small |
+| topic     | string | The topic of the image to generate. | | Yes | |
+| summaries | string | The list of summaries that describe the topic. | | Yes | |
+| size      | string | The size of the image to generate. Small=256x256. Medium=512x512. Large=1024x1024 | small/medium/large | No | small |
 
 **Request Example**
 
@@ -214,7 +215,14 @@ Content-Type: application/json
 POST https://pdf-fhl-operations.azurewebsites.net/api/get-topic-cover
 
 {
-    "prompt": "a cow eating grass"
+    "topic": "Artificial Intelligence",
+    "summaries": [
+        "Artificial Intelligence (AI) is a field of computer science that focuses on developing machines that can think, learn, and solve problems like humans do",
+        "AI in the workplace is the use of artificial intelligence to streamline and improve processes, enhance customer service, and increase productivity and efficiency",
+        "AI technology is a type of computer science that enables machines to process information with intelligence, allowing them to \"think\" and act independently.",
+        "AlphaGo is an AI computer program developed by Google that was able to defeat a professional human player in the game of Go."
+    ],
+    "size": "medium"
 }
 ```
 

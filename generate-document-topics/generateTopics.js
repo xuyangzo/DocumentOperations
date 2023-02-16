@@ -10,6 +10,7 @@ const openai = new OpenAIApi(configuration);
 // Generate document summary
 async function generateKeywords(pdfText, temperature, max_tokens, top_p, frequency_penalty, presence_penalty) {
 	// Setting default value
+	const targetPdfText = pdfText.length > 6400 ? pdfText.slice(0, 6400) : pdfText;
 	const targetTemperature = temperature ? Number(temperature) : 0.7;
 	const targetMaxTokens = max_tokens ? Number(max_tokens) : 128;
 	const targetTopP = top_p ? Number(top_p) : 1
@@ -18,7 +19,7 @@ async function generateKeywords(pdfText, temperature, max_tokens, top_p, frequen
 
     try {
         const args = {
-			pdfText,
+			targetPdfText,
 			targetTemperature,
 			targetMaxTokens,
 			targetTopP,
@@ -36,10 +37,10 @@ async function generateKeywords(pdfText, temperature, max_tokens, top_p, frequen
 // Execute keywords generation by calling openai's API
 async function execute(args, retryCount) {
     try {
-        const { pdfText, targetTemperature, targetMaxTokens, targetTopP, targetFrequencyPenalty, targetPresencePenalty } = args;
+        const { targetPdfText, targetTemperature, targetMaxTokens, targetTopP, targetFrequencyPenalty, targetPresencePenalty } = args;
 		const response = await openai.createCompletion({
             model: "text-davinci-003",
-            prompt: getKeywordsWithPrefix(pdfText),
+            prompt: getKeywordsWithPrefix(targetPdfText),
             temperature: targetTemperature,
             max_tokens: targetMaxTokens,
             top_p: targetTopP,

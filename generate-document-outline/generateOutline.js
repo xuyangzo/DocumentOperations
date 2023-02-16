@@ -77,7 +77,7 @@ function getPrompt(pages) {
 		prompt = prompt.concat(pageIndex, pageText);
 	}
 
-	return prompt;
+	return prompt.length > 7500 ? prompt.slice(0, 7500) : prompt;
 }
 
 // Get escaped page text
@@ -122,17 +122,22 @@ function parseResponse(response) {
 
 // Reorder the result outline
 function reorderOutline(outline) {
+	if (!outline) {
+		return;
+	}
+
 	outline.sort((a, b) => {
 		return a.index - b.index;
 	});
 
-	if (outline[0].index === 0) {
-		// Add 1 to all the index
-		for (const section of outline) {
+	const shouldIncreaseIndex = outline[0].index === 0;
+	for (const section of outline) {
+		if (shouldIncreaseIndex) {
 			section.index += 1;
-			if (section.children !== null) {
-				reorderOutline(section.children);
-			}
+		}
+
+		if (section.children) {
+			reorderOutline(section.children);
 		}
 	}
 }
