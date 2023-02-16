@@ -1,5 +1,5 @@
 const { Configuration, OpenAIApi } = require("openai");
-const { promptPrefix } = require("./constants");
+const { getPromptPreix } = require("./constants");
 require('dotenv').config();
 
 // Configuration
@@ -11,10 +11,10 @@ const openai = new OpenAIApi(configuration);
 // Generate document outline
 async function generateOutline(pages, temperature, max_tokens, top_p, frequency_penalty, presence_penalty) {
 	// Setting default value
-	const targetTemperature = temperature ? Number(temperature) : 0.7;
+	const targetTemperature = temperature ? Number(temperature) : 0.5;
 	const targetMaxTokens = max_tokens ? Number(max_tokens) : 256;
 	const targetTopP = top_p ? Number(top_p) : 1
-	const targetFrequencyPenalty = frequency_penalty ? Number(frequency_penalty) : 0;
+	const targetFrequencyPenalty = frequency_penalty ? Number(frequency_penalty) : 0.8;
 	const targetPresencePenalty = presence_penalty ? Number(presence_penalty) : 0;
 
 	try {
@@ -68,7 +68,7 @@ async function execute(args, retryCount) {
 
 // Get prompt
 function getPrompt(pages) {
-	let prompt = promptPrefix;
+	let prompt = getPromptPreix(pages.length);
 
 	for (let i = 0; i < pages.length; ++i) {
 		const pageIndex = `The content of the page with index ${i} is:\n`;
@@ -130,9 +130,8 @@ function reorderOutline(outline) {
 		return a.index - b.index;
 	});
 
-	const shouldIncreaseIndex = outline[0].index === 0;
 	for (const section of outline) {
-		if (shouldIncreaseIndex) {
+		if (section.index === 0) {
 			section.index += 1;
 		}
 
