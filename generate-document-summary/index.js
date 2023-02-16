@@ -1,4 +1,4 @@
-const generateSummary = require("../generate-document-topics/generateTopics");
+const generateSummary = require("./generateSummary");
 
 module.exports = async function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');

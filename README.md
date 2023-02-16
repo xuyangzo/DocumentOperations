@@ -131,7 +131,7 @@ Content-Type: application/json
 
 | Name | Type | Description | Range | Required | Default |
 | :--- | :--- | :---------- | :---- | :------- | :------ |
-| pages       | string collection | The list of page texts of the document. | 0 ~ 4500 characters  | Yes | |
+| pages       | string collection | The list of page texts of the document. | 0 ~ 6000 characters  | Yes | |
 | temperature | float  | Controls randomness: the lower, the more deterministic and repetitive. | 0 ~ 1 | No | 0.7 |
 | max_tokens  | int    | Max number of tokens to generate. | 0 ~ 2048 | No | 256 |
 | top_p       | float  | Controls diversity via nucleus sampling. | 0 ~ 1 | No | 1 |

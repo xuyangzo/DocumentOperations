@@ -15,13 +15,14 @@ const sizeMap = {
 };
 
 // Generate topics cover
-async function generateTopicCover(prompt, size) {
+async function generateTopicCover(topic, summaries, size) {
 	// Setting default value
 	const targetSize = sizeMap[size ? size : "small"];
 
 	try {
 		const args = {
-			prompt,
+			topic,
+			summaries,
 			targetSize
 		};
     	
@@ -35,9 +36,9 @@ async function generateTopicCover(prompt, size) {
 // Execute the topic cover generation by calling openai's API
 async function execute(args, retryCount) {
 	try {
-		const { prompt, targetSize } = args;
+		const { topic, summaries, targetSize } = args;
 		const response = await openai.createImage({
-			prompt,
+			prompt: generatePrompt(topic, summaries),
 			n: 1,
 			size: targetSize,
 		});
@@ -74,6 +75,12 @@ async function execute(args, retryCount) {
 			return await execute(args, retryCount);
 		}
 	}
+}
+
+// Generate prompt for image generation
+function generatePrompt(topic, summaries) {
+	// TODO: add logic to generate the prompt
+	return topic;
 }
 
 module.exports = generateTopicCover;
