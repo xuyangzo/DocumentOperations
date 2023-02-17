@@ -36,6 +36,7 @@ POST https://pdf-fhl-operations.azurewebsites.net/api/generate-document-summary
 
 {
     "pdfText": "asd,114514",
+    "getImages": true,
     "temperature": 0.7,
     "max_tokens": 128,
     "top_p": 1,
@@ -48,10 +49,12 @@ POST https://pdf-fhl-operations.azurewebsites.net/api/generate-document-summary
 
 | Name | Type | Description |
 | :--- | :--- | :---------- |
-| topics       | string collection | The topics generated. |
+| topics       | string/[TopicItem](#data-model) collection | The topics generated. |
 | retriedCount | int  | The number of retries made. |
 
 **Response Example**
+
+If `getImages = false`
 
 ```http
 HTTP/1.1 200 OK
@@ -64,6 +67,39 @@ Content-Type: application/json
         "Maya Rudolph",
         "Kevin Bacon",
         "Budweiser"
+    ],
+    "retriedCount": 0
+}
+```
+
+If `getImages = true`
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "topics": [
+        {
+            "topic": "OneDrive",
+            "url": "https://oaidalleapiprodscus.blob.core.windows.net"
+        },
+        {
+            "topic": "cloud storage",
+            "url": "https://oaidalleapiprodscus.blob.core.windows.net"
+        },
+        {
+            "topic": "documents",
+            "url": "https://oaidalleapiprodscus.blob.core.windows.net"
+        },
+        {
+            "topic": "photos",
+            "url": "https://oaidalleapiprodscus.blob.core.windows.net"
+        },
+        {
+            "topic": "files",
+            "url": "https://oaidalleapiprodscus.blob.core.windows.net"
+        }
     ],
     "retriedCount": 0
 }
@@ -207,7 +243,6 @@ Content-Type: application/json
 | Name | Type | Description | Range | Required | Default |
 | :--- | :--- | :---------- | :---- | :------- | :------ |
 | topic     | string | The topic of the image to generate. | | Yes | |
-| summaries | string | The list of summaries that describe the topic. | | Yes | |
 | size      | string | The size of the image to generate. Small=256x256. Medium=512x512. Large=1024x1024 | small/medium/large | No | small |
 
 **Request Example**
@@ -217,12 +252,6 @@ POST https://pdf-fhl-operations.azurewebsites.net/api/get-topic-cover
 
 {
     "topic": "Artificial Intelligence",
-    "summaries": [
-        "Artificial Intelligence (AI) is a field of computer science that focuses on developing machines that can think, learn, and solve problems like humans do",
-        "AI in the workplace is the use of artificial intelligence to streamline and improve processes, enhance customer service, and increase productivity and efficiency",
-        "AI technology is a type of computer science that enables machines to process information with intelligence, allowing them to \"think\" and act independently.",
-        "AlphaGo is an AI computer program developed by Google that was able to defeat a professional human player in the game of Go."
-    ],
     "size": "medium"
 }
 ```
@@ -241,7 +270,7 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-    "url": "https://oaidalleapiprodscus.blob.core.windows.net/private/org-CaWH1M5DUQPpn0LEvSV00yBb/user-hRnjLvLcHCBtJTkEOOhOtzvg/img-G9RwkGS62oVRXy7rYOdhddC3.png?st=2023-02-15T04%3A39%3A40Z&se=2023-02-15T06%3A39%3A40Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-02-15T02%3A29%3A23Z&ske=2023-02-16T02%3A29%3A23Z&sks=b&skv=2021-08-06&sig=17mtmKkZccudUsW%2BfWA1WV56o1BfpdNsN%2ByJz7wEcKU%3D",
+    "url": "https://oaidalleapiprodscus.blob.core.windows.net",
     "retriedCount": 0
 }
 ```
@@ -255,6 +284,13 @@ Content-Type: application/json
 | title | string | The title of the outline section. |
 | index | int | The page index of the outline section. |
 | children | OutlineItem collection | The sub-outlines of the outline section. |
+
+**TopicItem**
+
+| Property | Type | Description |
+| :------- | :--- | :---------- |
+| topic    | string | The content of topic. |
+| url      | string | The cover url of the topic. |
 
 ### Error Response
 

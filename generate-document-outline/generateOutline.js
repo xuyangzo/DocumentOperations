@@ -105,7 +105,7 @@ function parseResponse(response) {
 		}
 	}
 
-	if (outline !== null) {
+	if (outline) {
 		reorderOutline(outline);
 		return outline;
 	}

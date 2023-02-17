@@ -3,14 +3,15 @@ const generateTopicCover = require("./generateTopicCover");
 module.exports = async function (context, req) {
 	context.log('JavaScript HTTP trigger function processed a request.');
 	
-	const { topic, summaries, size } = req.body;
+	const { topic, size } = req.body;
 
 	try {
-		const [imageUrl, retriedCount] = await generateTopicCover(topic, summaries, size);
+		const [imageItem, retriedCount] = await generateTopicCover(topic, size);
 		context.res = {
 			status: 200,
 			body: {
-				url: imageUrl,
+				url: imageItem.url,
+				prompt: imageItem.prompt,
 				retriedCount
 			},
             headers: {

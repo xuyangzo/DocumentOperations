@@ -153,9 +153,9 @@ async function generateImagePrompts(keywords) {
 	for (let i = 0; i < results.length; ++i) {
 		const { status, value } = results[i];
 		if (status === "fulfilled") {
-			if (value !== null &&
-				value.data !== null &&
-				value.data.choices !== null &&
+			if (value &&
+				value.data &&
+				value.data.choices &&
 				value.data.choices.length > 0)
 			{
 				prompts.push(value.data.choices[0].text);

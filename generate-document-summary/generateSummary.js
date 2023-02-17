@@ -48,9 +48,9 @@ async function execute(args, retryCount) {
             presence_penalty: targetPresencePenalty
         });
           
-        if (response !== null &&
-            response.data !== null &&
-            response.data.choices !== null &&
+        if (response &&
+            response.data &&
+            response.data.choices &&
             response.data.choices.length > 0)
         {
             return [parseSummary(response.data.choices[0].text), 3-retryCount];

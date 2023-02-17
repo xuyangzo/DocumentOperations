@@ -1,5 +1,4 @@
 const { Configuration, OpenAIApi } = require("openai");
-const { generateDallePrompt } = require("./utils");
 require('dotenv').config();
 
 // Configuration
@@ -16,14 +15,13 @@ const sizeMap = {
 };
 
 // Generate topics cover
-async function generateTopicCover(topic, summaries, size) {
+async function generateTopicCover(topic, size) {
 	// Setting default value
 	const targetSize = sizeMap[size ? size : "small"];
 
 	try {
 		const args = {
 			topic,
-			summaries,
 			targetSize
 		};
     	
@@ -37,9 +35,11 @@ async function generateTopicCover(topic, summaries, size) {
 // Execute the topic cover generation by calling openai's API
 async function execute(args, retryCount) {
 	try {
-		const { topic, summaries, targetSize } = args;
+		const { topic, targetSize } = args;
+
+		const prompt = await generateImagePrompt(topic);
 		const response = await openai.createImage({
-			prompt: generateDallePrompt(topic, summaries),
+			prompt,
 			n: 1,
 			size: targetSize,
 		});
@@ -49,7 +49,11 @@ async function execute(args, retryCount) {
 			response.data.data !== null &&
 			response.data.data.length > 0)
 		{
-			return [response.data.data[0].url, 3-retryCount];
+			const imageItem = {
+				url: response.data.data[0].url,
+				prompt
+			}
+			return [imageItem, 3-retryCount];
 		}
 
 		// This means no image is generated.
@@ -76,6 +80,37 @@ async function execute(args, retryCount) {
 			return await execute(args, retryCount);
 		}
 	}
+}
+
+// Generate the prompt to be given to DALL-E
+async function generateImagePrompt(topic) {
+	const response = await openai.createCompletion({
+		model: "text-davinci-003",
+		prompt: `Think of a summary to describle the term "${topic}". Then generate a prompt to be given to DALL-E 2 to generate an image about this term based on the summary you just thought of. The prompt should be visually descriptive and avoid any explicit references to text. We want no text to be displayed on the generated image. The promot should be a string with double quotes around.`,
+		temperature: 0.5,
+		max_tokens: 128,
+		top_p: 1,
+		frequency_penalty: 0.8,
+		presence_penalty: 0
+	});
+
+	if (response &&
+		response.data &&
+		response.data.choices &&
+		response.data.choices.length > 0)
+	{
+		return response.data.choices[0].text.trim().replace(/"/g, "");
+	}
+
+	// If no meaning prompt is given, should throw
+	const errMessage = "No prompt for image generation is generated";
+	const ex = new Error(errMessage);
+	ex.response = {
+		data: {
+			message: errMessage
+		}
+	};
+	throw ex;
 }
 
 module.exports = generateTopicCover;
