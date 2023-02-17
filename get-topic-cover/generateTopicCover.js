@@ -1,4 +1,5 @@
 const { Configuration, OpenAIApi } = require("openai");
+const { generateDallePrompt } = require("./utils");
 require('dotenv').config();
 
 // Configuration
@@ -38,7 +39,7 @@ async function execute(args, retryCount) {
 	try {
 		const { topic, summaries, targetSize } = args;
 		const response = await openai.createImage({
-			prompt: generatePrompt(topic, summaries),
+			prompt: generateDallePrompt(topic, summaries),
 			n: 1,
 			size: targetSize,
 		});
@@ -75,12 +76,6 @@ async function execute(args, retryCount) {
 			return await execute(args, retryCount);
 		}
 	}
-}
-
-// Generate prompt for image generation
-function generatePrompt(topic, summaries) {
-	// TODO: add logic to generate the prompt
-	return topic;
 }
 
 module.exports = generateTopicCover;

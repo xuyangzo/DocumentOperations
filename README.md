@@ -27,6 +27,7 @@ Content-Type: application/json
 | top_p       | float  | Controls diversity via nucleus sampling. | 0 ~ 1 | No | 1 |
 | frequency_penalty. | float | How much to penalize new tokens based on existing frequency. | -2.0 ~ 2.0 | No | 0 |
 | presence_penalty  | float | How much to penalize new tokens based on whether they exist in text so far. | -2.0 ~ 2.0 | No | 0 |
+| getImages | bool | Whether need to also return topic cover image. If set to true, topic cover image will also be returned along with topic. | | No | false |
 
 **Request Example**
 

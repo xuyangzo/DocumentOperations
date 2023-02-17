@@ -8,7 +8,7 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 // Generate document summary
-async function generateKeywords(pdfText, temperature, max_tokens, top_p, frequency_penalty, presence_penalty) {
+async function generateKeywords(pdfText, getImages, temperature, max_tokens, top_p, frequency_penalty, presence_penalty) {
 	// Setting default value
 	const targetPdfText = pdfText.length > 6400 ? pdfText.slice(0, 6400) : pdfText;
 	const targetTemperature = temperature ? Number(temperature) : 0.7;
@@ -24,7 +24,8 @@ async function generateKeywords(pdfText, temperature, max_tokens, top_p, frequen
 			targetMaxTokens,
 			targetTopP,
 			targetFrequencyPenalty,
-			targetPresencePenalty
+			targetPresencePenalty,
+			getImages
 		};
     	
 		return await execute(args, 3);
@@ -37,7 +38,10 @@ async function generateKeywords(pdfText, temperature, max_tokens, top_p, frequen
 // Execute keywords generation by calling openai's API
 async function execute(args, retryCount) {
     try {
-        const { targetPdfText, targetTemperature, targetMaxTokens, targetTopP, targetFrequencyPenalty, targetPresencePenalty } = args;
+		const {
+			targetPdfText, targetTemperature, targetMaxTokens, targetTopP,
+			targetFrequencyPenalty, targetPresencePenalty, getImages
+		} = args;
 		const response = await openai.createCompletion({
             model: "text-davinci-003",
             prompt: getKeywordsWithPrefix(targetPdfText),
@@ -54,7 +58,16 @@ async function execute(args, retryCount) {
             response.data.choices.length > 0)
 		{
 			const keywordsStr = response.data.choices[0].text;
-            return [parseKeywords(keywordsStr), 3-retryCount];
+			const keywords = parseKeywords(keywordsStr);
+
+			if (!getImages) {
+				return [keywords, 3 - retryCount];
+			}
+
+			// Get all topics with images
+			const imagePrompts = await generateImagePrompts(keywords);
+			const topicsWithImages = await generateTopicsWithImages(keywords, imagePrompts);
+            return [topicsWithImages, 3-retryCount];
         }
 
         // There are no meaningful data in the response. Should throw
@@ -95,6 +108,75 @@ function parseKeywords(keywordsStr) {
 	const parsedStr = keywordsStr.replace(/\n/ig, "");
 	const keywords = parsedStr.split(",").filter(x => x).map(keyword => keyword.trim());
 	return keywords.slice(0, 5);
+}
+
+// Generate a list of images with topics
+async function generateTopicsWithImages(keywords, prompts) {
+	const generateImageEvents = prompts.map(prompt => generateImageAsync(prompt));
+	const results = await Promise.allSettled(generateImageEvents);
+
+	const topics = [];
+	for (let i = 0; i < results.length; ++i) {
+		const { status, value } = results[i];
+		if (status === "fulfilled") {
+			if (value !== null &&
+				value.data !== null &&
+				value.data.data !== null &&
+				value.data.data.length > 0)
+			{
+				topics.push({
+					topic: keywords[i],
+					url: value.data.data[0].url
+				});
+			}
+		}	
+	}
+
+	return topics;
+}
+
+// Generate an image based on a single topic
+function generateImageAsync(prompt) {
+	return openai.createImage({
+		prompt,
+		n: 1,
+		size: "256x256",
+	});
+}
+
+// Generate the list of prompts based on a list of topics
+async function generateImagePrompts(keywords) {
+	const generatePromptsEvents = keywords.map(keyword => generateImagePrompt(keyword));
+	const results = await Promise.allSettled(generatePromptsEvents);
+
+	const prompts = [];
+	for (let i = 0; i < results.length; ++i) {
+		const { status, value } = results[i];
+		if (status === "fulfilled") {
+			if (value !== null &&
+				value.data !== null &&
+				value.data.choices !== null &&
+				value.data.choices.length > 0)
+			{
+				prompts.push(value.data.choices[0].text);
+			}
+		}	
+	}
+
+	return prompts;
+}
+
+// Generate the DALLE prompt based on a single topic
+function generateImagePrompt(keyword) {
+	return openai.createCompletion({
+		model: "text-davinci-003",
+		prompt: `Think of a summary to describle the term "${keyword}". Then generate a prompt to be given to DALL-E 2 to generate an image about this term based on the summary you just thought of. The prompt should be visually descriptive and avoid any explicit references to text. We want no text to be displayed on the generated image. The promot should be a string with double quotes around.`,
+		temperature: 0.5,
+		max_tokens: 128,
+		top_p: 1,
+		frequency_penalty: 0.8,
+		presence_penalty: 0
+	});
 }
 
 module.exports = generateKeywords;

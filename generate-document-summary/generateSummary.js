@@ -89,9 +89,9 @@ function getSummaryWithPrefix(pdfText) {
 	return summaryPrefix + pdfText;
 }
 
-// Parse summary to eliminate new line characters
+// Parse summary to eliminate new line characters at beginning and end
 function parseSummary(summary) {
-    return summary.replace(/\n/ig, "");
+    return summary.trim();
 }
 
 module.exports = generateSummary;
